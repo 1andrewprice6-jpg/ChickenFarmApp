@@ -20,6 +20,7 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+        cache: gradle
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -30,6 +31,18 @@ jobs:
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: chicken-farm-debug
+        name: chicken-farm-debug-apk
         path: app/build/outputs/apk/debug/*.apk
+        retention-days: 30
+
+    - name: Build Release APK (unsigned)
+      run: ./gradlew assembleRelease --stacktrace
+      continue-on-error: true
+
+    - name: Upload Release APK
+      uses: actions/upload-artifact@v4
+      if: success()
+      with:
+        name: chicken-farm-release-apk
+        path: app/build/outputs/apk/release/*.apk
         retention-days: 30
